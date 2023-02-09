@@ -4,8 +4,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -13,8 +11,12 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
+import colors from "../../constants/colors";
+
 const Register = () => {
   const theme = createTheme();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,6 +24,7 @@ const Register = () => {
       const data = new FormData(e.currentTarget);
 
       const res = await axios.post("http://localhost:8000/api/register", data);
+      navigate("/login");
       console.log(res);
     } catch (err) {
       console.error(err);
@@ -30,7 +33,15 @@ const Register = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container
+        component="main"
+        maxWidth="xs"
+        style={{
+          backgroundColor: colors.accent,
+          height: 550,
+          borderRadius: 10,
+        }}
+      >
         <CssBaseline />
         <Box
           sx={{
@@ -40,7 +51,7 @@ const Register = () => {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: colors.primary }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
@@ -48,30 +59,20 @@ const Register = () => {
           </Typography>
           <Box
             component="form"
-            noValidate
+            noValidate={false}
             onSubmit={handleSubmit}
             sx={{ mt: 3 }}
           >
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={12}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="fullname"
                   required
                   fullWidth
-                  id="firstName"
-                  label="First Name"
+                  id="fullname"
+                  label="Full Name"
                   autoFocus
-                />
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -79,6 +80,7 @@ const Register = () => {
                   required
                   fullWidth
                   id="email"
+                  type="email"
                   label="Email Address"
                   name="email"
                   autoComplete="email"
@@ -96,11 +98,14 @@ const Register = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox value="allowExtraEmails" color="primary" />
-                  }
-                  label="I want to receive inspiration, marketing promotions and updates via email."
+                <TextField
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password Confirmation"
+                  type="password"
+                  id="passwordConfirmation"
+                  autoComplete="new-password"
                 />
               </Grid>
             </Grid>
@@ -108,7 +113,7 @@ const Register = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ mt: 3, mb: 2, bgcolor: colors.secondary }}
             >
               Sign Up
             </Button>

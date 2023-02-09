@@ -3,8 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -12,21 +10,37 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import axios from "axios";
-
+import colors from "../../constants/colors";
+import { useDispatch } from "react-redux";
+import * as authActions from "../../store/actions/auth";
+import { useNavigate } from "react-router-dom";
 const theme = createTheme();
 
 export default function Login() {
-  const handleSubmit = async (event) => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const res = await axios.post("/api/login", data);
-    console.log(res);
+    try {
+      dispatch(authActions.login(data));
+      navigate("/");
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
     <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
+      <Container
+        component="main"
+        maxWidth="xs"
+        style={{
+          backgroundColor: colors.accent,
+          height: 420,
+          borderRadius: 10,
+        }}
+      >
         <CssBaseline />
         <Box
           sx={{
@@ -36,7 +50,7 @@ export default function Login() {
             alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: colors.primary }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
@@ -45,12 +59,13 @@ export default function Login() {
           <Box
             component="form"
             onSubmit={handleSubmit}
-            noValidate
+            noValidate={false}
             sx={{ mt: 1 }}
           >
             <TextField
               margin="normal"
               required
+              type="email"
               fullWidth
               id="email"
               label="Email Address"
@@ -68,10 +83,6 @@ export default function Login() {
               id="password"
               autoComplete="current-password"
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Button
               type="submit"
               fullWidth
@@ -80,12 +91,7 @@ export default function Login() {
             >
               Sign In
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
+            <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="/register" variant="body2">
                   {"Don't have an account? Sign Up"}
