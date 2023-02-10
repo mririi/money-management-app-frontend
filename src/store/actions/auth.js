@@ -20,8 +20,24 @@ export const login = (values) => {
         saveDataToStorage(response.data.token);
       })
       .catch((error) => {
-        console.log(error);
-        //throw new Error(message);
+        const message = error.response.data.message;
+        throw new Error(message);
+      });
+  };
+};
+export const register = (values) => {
+  return async (dispatch) => {
+    await axios
+      .post(API_URL + "/register", values, {
+        headers: { Accept: "application/json" },
+      })
+      .then((response) => {
+        dispatch(authenticate(response.data.user));
+        saveDataToStorage(response.data.token);
+      })
+      .catch((error) => {
+        const message = error.response.data.message;
+        throw new Error(message);
       });
   };
 };

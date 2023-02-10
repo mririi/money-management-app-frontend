@@ -14,19 +14,42 @@ import colors from "../../constants/colors";
 import { useDispatch } from "react-redux";
 import * as authActions from "../../store/actions/auth";
 import { useNavigate } from "react-router-dom";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+import { useState } from "react";
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 const theme = createTheme();
 
 export default function Login() {
+  const [open, setOpen] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [error, setError] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const handleSubmit = (event) => {
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAlert(false);
+  };
+  const handleSubmit = async (event) => {
     event.preventDefault();
+    setOpen(true);
     const data = new FormData(event.currentTarget);
+    console.log(data);
+    const action = authActions.login(data);
     try {
-      dispatch(authActions.login(data));
+      await dispatch(action);
+      setOpen(false);
       navigate("/");
     } catch (err) {
-      console.log(err);
+      setOpen(false);
+      setError(err.message);
+      setOpenAlert(true);
     }
   };
 
@@ -39,6 +62,7 @@ export default function Login() {
           backgroundColor: colors.accent,
           height: 420,
           borderRadius: 10,
+          marginTop: 130,
         }}
       >
         <CssBaseline />
@@ -100,6 +124,22 @@ export default function Login() {
             </Grid>
           </Box>
         </Box>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        <Snackbar
+          open={openAlert}
+          autoHideDuration={6000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+            {error}
+          </Alert>
+        </Snackbar>
       </Container>
     </ThemeProvider>
   );

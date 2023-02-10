@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -13,21 +12,43 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import colors from "../../constants/colors";
-
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
+import { useDispatch } from "react-redux";
+import * as authActions from "../../store/actions/auth";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+import { useState } from "react";
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 const Register = () => {
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [openAlert, setOpenAlert] = useState(false);
+  const dispatch = useDispatch();
   const theme = createTheme();
   const navigate = useNavigate();
-
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenAlert(false);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setOpen(true);
+    const data = new FormData(e.currentTarget);
+    const action = authActions.register(data);
     try {
-      const data = new FormData(e.currentTarget);
-
-      const res = await axios.post("http://localhost:8000/api/register", data);
-      navigate("/login");
-      console.log(res);
+      await dispatch(action);
+      setOpen(false);
+      navigate("/");
     } catch (err) {
-      console.error(err);
+      console.error(err.message);
+      setOpenAlert(true);
+      setOpen(false);
+      setError(err.message);
     }
   };
 
@@ -40,6 +61,7 @@ const Register = () => {
           backgroundColor: colors.accent,
           height: 550,
           borderRadius: 10,
+          marginTop: 70,
         }}
       >
         <CssBaseline />
@@ -67,10 +89,10 @@ const Register = () => {
               <Grid item xs={12} sm={12}>
                 <TextField
                   autoComplete="given-name"
-                  name="fullname"
+                  name="name"
                   required
                   fullWidth
-                  id="fullname"
+                  id="name"
                   label="Full Name"
                   autoFocus
                 />
@@ -101,10 +123,10 @@ const Register = () => {
                 <TextField
                   required
                   fullWidth
-                  name="password"
+                  name="password_confirmation"
                   label="Password Confirmation"
                   type="password"
-                  id="passwordConfirmation"
+                  id="password_confirmation"
                   autoComplete="new-password"
                 />
               </Grid>
@@ -126,6 +148,22 @@ const Register = () => {
             </Grid>
           </Box>
         </Box>
+        <Backdrop
+          sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={open}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
+        <Snackbar
+          open={openAlert}
+          autoHideDuration={6000}
+          onClose={handleClose}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
+            {error}
+          </Alert>
+        </Snackbar>
       </Container>
     </ThemeProvider>
   );

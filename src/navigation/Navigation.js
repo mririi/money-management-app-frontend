@@ -1,20 +1,20 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+//import { useDispatch, useSelector } from "react-redux";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AuthLayout from "../layouts/AuthLayout";
 import GuestLayout from "../layouts/GuestLayout";
 import "../App.css";
 import Login from "../pages/authentication/Login";
 import Register from "../pages/authentication/Register";
 import Home from "../pages/Home";
-import * as authActions from "../store/actions/auth";
+// import * as authActions from "../store/actions/auth";
 const Navigation = () => {
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  const dispatch = useDispatch();
+  // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  // const dispatch = useDispatch();
   return (
     <Router>
       <div className="App">
-        <ul className="App-header">
+        {/* <ul className="App-header">
           {!isAuthenticated && (
             <>
               <li>
@@ -37,7 +37,7 @@ const Navigation = () => {
               </Link>
             </li>
           )}
-        </ul>
+        </ul> */}
         <Routes>
           <Route element={<GuestLayout />}>
             <Route path="/login" element={<Login />}></Route>
